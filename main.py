@@ -26,6 +26,7 @@ SNEKNET_TOKEN = os.environ.get("SNEKNET_TOKEN", None)
 re_csrf = re.compile(r"<gremlin-app\n\s*csrf=\"(.*)\"")
 re_notes_ids = re.compile(r"<gremlin-note id=\"(.*)\"")
 re_notes = re.compile(r"<gremlin-note id=\".*\">\n\s*(.*)")
+re_plswait = re.compile(r"<gremlin-prompt>\n.*<h1>(.*)</h1>\n.*<p>Please try again in a moment.</p>")
 
 sneknet = Sneknet(SNEKNET_TOKEN)
 gremlins = GremlinsAPI(REDDIT_TOKEN)
@@ -39,6 +40,15 @@ x = 0
 while x < (42069 - 1060):
     log.debug('='*50)
     room = gremlins.room()
+
+    plswait = re_plswait.findall(room.text)
+    if plswait:
+        for i in range(5):
+            print(f'{back.WHITE}{fore.BLACK}{plswait[0]}' + ('' if i % 2 == 0 else back.BLACK) + ' ' + style.RESET, end='\r')
+            time.sleep(1)
+        continue
+
+    print('', end='')
 
     csrf = re_csrf.findall(room.text)[0]
     ids = re_notes_ids.findall(room.text)
@@ -56,19 +66,24 @@ while x < (42069 - 1060):
         log.debug(f'Confirmed imposter from Sneknet {known=} {_id=} "{notes[_id]}"')
 
     else:
-        for i, v in known.items():
-            del notes[ids[i]]
-            log.debug(f'Dropped known human from notes {ids[i]=}')
-
-        if len(notes) == 1:
-            print(f'[{fore.CYAN} IMPOSTER  {style.RESET}]', end='')
-            _id = list(notes.keys())[0]
-            log.debug(f'Confirmed imposter from last note {_id=} "{notes[_id]}"')
+        if len(known) == 5:
+            log.error(f'Zero length notes?!?!?! {notes=} {known=}')
+            _id = random.choice(ids)
 
         else:
-            print(f'[{fore.YELLOW} RANDOM {style.RESET}][{len(notes)}]', end='')
-            _id = random.choice(list(notes.keys()))
-            log.debug(f'Picking random from {len(notes)} options, {_id=}, {notes=}, "{notes[_id]}"')
+            for i, v in known.items():
+                del notes[ids[i]]
+                log.debug(f'Dropped known human from notes {ids[i]=}')
+
+            if len(notes) == 1:
+                print(f'[{fore.CYAN} IMPOSTER  {style.RESET}]', end='')
+                _id = list(notes.keys())[0]
+                log.debug(f'Confirmed imposter from last note {_id=} "{notes[_id]}"')
+
+            else:
+                print(f'[{fore.YELLOW} RANDOM {style.RESET}][{len(notes)}]', end='')
+                _id = random.choice(list(notes.keys()))
+                log.debug(f'Picking random from {len(notes)} options, {_id=}, {notes=}, "{notes[_id]}"')
 
     text = notes[_id]
 
@@ -133,7 +148,3 @@ while x < (42069 - 1060):
         print(style.RESET)
 
     print('')
-
-    # You might need this but I dont
-    time.sleep(.5)
-    x += 1
