@@ -30,10 +30,11 @@ class Sneknet(Session):
 
     def submit(self, options) -> list:
         r = self.post('/submit', json={
-            "options": options
+            "options": options,
+            "tag": "experiment-humanonly",
         })
         return list(r.json()['seen'].values())[0]['seen']
 
     def query(self, messages: List[str]) -> dict:
         r = self.post('/query', json={"options": messages})
-        return {d['i']: not d['correct'] for d in r.json()['answers']}
+        return {d['i']: d['correct'] for d in r.json()['answers']}

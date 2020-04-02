@@ -13,7 +13,7 @@ class GremlinsAPI(Session):
         self.cookies.set("reddit_session", api_key)
 
     @sleep_and_retry
-    @limits(calls=2, period=1) # 2 calls / second
+    @limits(calls=2.5, period=1) # 2 calls / second
     def request(self, method, url, **kwargs):
         r = super().request(method, f'{self.API_BASE}{url}', **kwargs)
 

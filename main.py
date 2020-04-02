@@ -37,7 +37,7 @@ print(style.RESET)
 
 x = 0
 
-while x < (42069 - 1060):
+while x < (42069 - 310):
     log.debug('='*50)
     room = gremlins.room()
 
@@ -58,32 +58,15 @@ while x < (42069 - 1060):
 
     # Query Sneknet for known, and remove known humans from the notes
     known = sneknet.query(notes_content)
-    if True in known.values():
-        print(f'[{fore.CYAN} IMPOSTER  {style.RESET}]', end='')
-        # Sneknet doesnt return a full dict and it FUCKS my shit
-        vals = [known.get(k, False) for k in range(5)]
-        _id = ids[vals.index(True)]
-        log.debug(f'Confirmed imposter from Sneknet {known=} {_id=} "{notes[_id]}"')
-
+    if False in known.values():
+        humans = dict(filter(lambda elem: elem[1] is False, known.items()))
+        human_id = random.choice(list(humans.keys()))
+        print(f'[{fore.GREEN_YELLOW} HUMAN {style.RESET}][{len(notes)}]', end='')
+        _id = ids[human_id]
     else:
-        if len(known) == 5:
-            log.error(f'Zero length notes?!?!?! {notes=} {known=}')
-            _id = random.choice(ids)
-
-        else:
-            for i, v in known.items():
-                del notes[ids[i]]
-                log.debug(f'Dropped known human from notes {ids[i]=}')
-
-            if len(notes) == 1:
-                print(f'[{fore.CYAN} IMPOSTER  {style.RESET}]', end='')
-                _id = list(notes.keys())[0]
-                log.debug(f'Confirmed imposter from last note {_id=} "{notes[_id]}"')
-
-            else:
-                print(f'[{fore.YELLOW} RANDOM {style.RESET}][{len(notes)}]', end='')
-                _id = random.choice(list(notes.keys()))
-                log.debug(f'Picking random from {len(notes)} options, {_id=}, {notes=}, "{notes[_id]}"')
+        print(f'[{fore.YELLOW} YOLO {style.RESET}][{len(notes)}]', end='')
+        _id = random.choice(list(notes.keys()))
+        log.debug(f'Picking random from {len(notes)} options, {_id=}, {notes=}, "{notes[_id]}"')
 
     text = notes[_id]
 
@@ -130,7 +113,7 @@ while x < (42069 - 1060):
             }
         ]
 
-    seen = {}
+    seen = sneknet.submit(options)
 
     log.debug(f'{seen=}')
 
@@ -138,13 +121,5 @@ while x < (42069 - 1060):
         print(f'[{fore.CYAN}  SEEN  {style.RESET}]', end='')
     else:
         print(f'[{fore.MAGENTA} UNSEEN {style.RESET}]', end='')
-
-    if (False in known.values() and is_correct):
-        print(back.RED + fore.BLACK)
-        print(f'\n\nOOH SHIT THIS SHOULD NEVER HAPPEN\n\n')
-        print(f'{notes_content=} {known=}')
-        print('\n')
-        print(f'{notes[_id]} WAS WRONG!!!!')
-        print(style.RESET)
 
     print('')
