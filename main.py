@@ -3,6 +3,11 @@ import sys
 import re
 import time
 import random
+import sentry_sdk
+
+from sentry_sdk.integrations.excepthook import ExcepthookIntegration
+
+sentry_sdk.init("https://4587d3478b7e4a029ca43fe88985d5ac@sentry.generalprogramming.org/2", integrations=[ExcepthookIntegration(always_run=True)])
 
 from colored import fore, back, style
 
