@@ -34,7 +34,9 @@ print(fore.GREEN_YELLOW)
 print('🐍  https://snakeroom.org/sneknet 🐍')
 print(style.RESET)
 
-while True:
+x = 0
+
+while x < (42069 - 1060):
     log.debug('='*50)
     room = gremlins.room()
 
@@ -113,7 +115,7 @@ while True:
             }
         ]
 
-    seen = sneknet.submit(options)
+    seen = {}
 
     log.debug(f'{seen=}')
 
@@ -122,7 +124,7 @@ while True:
     else:
         print(f'[{fore.MAGENTA} UNSEEN {style.RESET}]', end='')
 
-    if (True in known.values() and not is_correct):
+    if (False in known.values() and is_correct):
         print(back.RED + fore.BLACK)
         print(f'\n\nOOH SHIT THIS SHOULD NEVER HAPPEN\n\n')
         print(f'{notes_content=} {known=}')
@@ -133,4 +135,5 @@ while True:
     print('')
 
     # You might need this but I dont
-    # time.sleep(.1)
+    time.sleep(.5)
+    x += 1

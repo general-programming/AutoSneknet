@@ -36,4 +36,4 @@ class Sneknet(Session):
 
     def query(self, messages: List[str]) -> dict:
         r = self.post('/query', json={"options": messages})
-        return {d['i']: d['correct'] for d in r.json()['answers']}
+        return {d['i']: not d['correct'] for d in r.json()['answers']}
